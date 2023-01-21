@@ -1,5 +1,7 @@
 'use strict';
 
+const { has } = require("markdown-it/lib/common/utils");
+
 /* EJERCICIO 1
 Implementar la clase LinkedList, definiendo los siguientes métodos:
   - add: agrega un nuevo nodo al final de la lista;
@@ -10,10 +12,66 @@ Implementar la clase LinkedList, definiendo los siguientes métodos:
   search(isEven), donde isEven es una función que retorna true cuando recibe por parámetro un número par, busca un nodo cuyo valor sea un número par.
   En caso de que la búsqueda no arroje resultados, search debe retornar null.
 */
-function LinkedList() {}
+function LinkedList() {
+  this._length = 0;
+  this.head = null
+}
 
-function Node(value) {}
+function Node(value) {
+  this.value = value
+  this.next = null
+}
 
+LinkedList.prototype.add = function(value){
+  var node = new Node(value)
+  var current = this.head;
+  if(!current) {
+    this.head = node
+    this._length++;
+    return node;
+  }
+  while(current.next) {
+    current = current.next;
+  }
+  current.next = node;
+  this._length++;
+  return node
+}
+
+LinkedList.prototype.remove = function(){
+  var current = this.head
+  if (this._length == 0) return null
+  if (this._length > 1) {
+    while(current.next.next!=null){
+    current = current.next
+   }
+   let lastValue = current.next.value
+    current.next = null
+    this._length--;
+    return lastValue
+  } 
+  if (this._length = 1) {
+    this.head = null
+    this._length--
+    return current.value
+  }
+}
+
+LinkedList.prototype.search = function (filter){
+  var current = this.head
+  if(typeof filter === "function") { 
+    while (!filter(current.value)) {
+    current = current.next
+    }
+    return current.value
+  }
+  while(current.next){
+    if(current.value == filter) return current.value
+    current = current.next
+  }
+  if (current.value == filter) return current.value
+  return null
+} 
 /* EJERCICIO 2
 Implementar la clase HashTable.
 Nuetra tabla hash, internamente, consta de un arreglo de buckets (slots, contenedores, o casilleros; es decir, posiciones posibles para almacenar la información), donde guardaremos datos en formato clave-valor (por ejemplo, {instructora: 'Ani'}).
@@ -27,11 +85,39 @@ La clase debe tener los siguientes métodos:
 
 Ejemplo: supongamos que quiero guardar {instructora: 'Ani'} en la tabla. Primero puedo chequear, con hasKey, si ya hay algo en la tabla con el nombre 'instructora'; luego, invocando set('instructora', 'Ani'), se almacenará el par clave-valor en un bucket específico (determinado al hashear la clave)
 */
-function HashTable() {}
+function HashTable() {
+  this.numBuckets = 35;
+  this.buckets = []
+}
 
+HashTable.prototype.hash = function(key) {
+  let sum = 0;
+  for (let i = 0; i < key.length; i++){
+    sum += key.charCodeAt(i);
+  
+  }
+  return sum % this.numBuckets;
+}
+
+HashTable.prototype.set = function(key, value) {
+  if(typeof key !== "string") {
+    throw TypeError("Keys must be strings")
+  }
+  let obj = {[key]: value}
+  this.buckets[this.hash(key)] = obj
+}
+
+HashTable.prototype.get = function(key) {
+  return this.buckets[this.hash(key)][key]
+}
+
+HashTable.prototype.hasKey = function (key) {
+  if (this.buckets[this.hash(key)] !== true ) return true 
+  return false
+}
 // No modifiquen nada debajo de esta linea
 // --------------------------------
-
+console.log()
 module.exports = {
    Node,
    LinkedList,
