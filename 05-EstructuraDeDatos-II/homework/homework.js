@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const { has } = require("markdown-it/lib/common/utils");
 
@@ -14,64 +14,64 @@ Implementar la clase LinkedList, definiendo los siguientes métodos:
 */
 function LinkedList() {
   this._length = 0;
-  this.head = null
+  this.head = null;
 }
 
 function Node(value) {
-  this.value = value
-  this.next = null
+  this.value = value;
+  this.next = null;
 }
 
-LinkedList.prototype.add = function(value){
-  var node = new Node(value)
+LinkedList.prototype.add = function (value) {
+  var node = new Node(value);
   var current = this.head;
-  if(!current) {
-    this.head = node
+  if (!current) {
+    this.head = node;
     this._length++;
     return node;
   }
-  while(current.next) {
+  while (current.next) {
     current = current.next;
   }
   current.next = node;
   this._length++;
-  return node
-}
+  return node;
+};
 
-LinkedList.prototype.remove = function(){
-  var current = this.head
-  if (this._length == 0) return null
+LinkedList.prototype.remove = function () {
+  var current = this.head;
+  if (this._length == 0) return null;
   if (this._length > 1) {
-    while(current.next.next!=null){
-    current = current.next
-   }
-   let lastValue = current.next.value
-    current.next = null
-    this._length--;
-    return lastValue
-  } 
-  if (this._length = 1) {
-    this.head = null
-    this._length--
-    return current.value
-  }
-}
-
-LinkedList.prototype.search = function (filter){
-  var current = this.head
-  if(typeof filter === "function") { 
-    while (!filter(current.value)) {
-    current = current.next
+    while (current.next.next != null) {
+      current = current.next;
     }
-    return current.value
+    let lastValue = current.next.value;
+    current.next = null;
+    this._length--;
+    return lastValue;
   }
-  while(current.next){
-    if(current.value == filter) return current.value
-    current = current.next
+  if ((this._length = 1)) {
+    this.head = null;
+    this._length--;
+    return current.value;
   }
-  if (current.value == filter) return current.value
-  return null
-} 
+};
+
+LinkedList.prototype.search = function (filter) {
+  var current = this.head;
+  if (typeof filter === "function") {
+    while (!filter(current.value)) {
+      current = current.next;
+    }
+    return current.value;
+  }
+  while (current.next) {
+    if (current.value == filter) return current.value;
+    current = current.next;
+  }
+  if (current.value == filter) return current.value;
+  return null;
+};
 /* EJERCICIO 2
 Implementar la clase HashTable.
 Nuetra tabla hash, internamente, consta de un arreglo de buckets (slots, contenedores, o casilleros; es decir, posiciones posibles para almacenar la información), donde guardaremos datos en formato clave-valor (por ejemplo, {instructora: 'Ani'}).
@@ -85,41 +85,51 @@ La clase debe tener los siguientes métodos:
 
 Ejemplo: supongamos que quiero guardar {instructora: 'Ani'} en la tabla. Primero puedo chequear, con hasKey, si ya hay algo en la tabla con el nombre 'instructora'; luego, invocando set('instructora', 'Ani'), se almacenará el par clave-valor en un bucket específico (determinado al hashear la clave)
 */
-function HashTable() {
-  this.numBuckets = 35;
-  this.buckets = []
+function HashTable(buckets) {
+  this.numBuckets = buckets || 35;
+  this.arr = new Array(this.numBuckets);
 }
 
-HashTable.prototype.hash = function(key) {
+HashTable.prototype.hash = function (key) {
   let sum = 0;
-  for (let i = 0; i < key.length; i++){
+  for (let i = 0; i < key.length; i++) {
     sum += key.charCodeAt(i);
-  
   }
   return sum % this.numBuckets;
-}
+};
 
-HashTable.prototype.set = function(key, value) {
-  if(typeof key !== "string") {
-    throw TypeError("Keys must be strings")
+HashTable.prototype.set = function (key, value) {
+  if (typeof key !== "string") {
+    throw TypeError("Keys must be strings");
   }
-  let obj = {[key]: value}
-  this.buckets[this.hash(key)] = obj
-}
+  if (!this.arr[this.hash(key)]) {
+    this.arr[this.hash(key)] = [];
+  }
+  if (this.hasKey(key)) {
+    Object.assign(
+      this.arr[this.hash(key)].find((element) => element.hasOwnProperty(key)),
+      { [key]: value }
+    );
+  }
+  this.arr[this.hash(key)].push({ [key]: value });
+};
 
-HashTable.prototype.get = function(key) {
-  return this.buckets[this.hash(key)][key]
-}
+HashTable.prototype.get = function (key) {
+  return Object.values(
+    this.arr[this.hash(key)].find((element) => element.hasOwnProperty(key))
+  ).shift();
+};
 
 HashTable.prototype.hasKey = function (key) {
-  if (this.buckets[this.hash(key)] !== true ) return true 
-  return false
-}
+  if (this.arr[this.hash(key)].find((element) => element.hasOwnProperty(key)))
+    return true;
+  return false;
+};
 // No modifiquen nada debajo de esta linea
 // --------------------------------
-console.log()
+console.log();
 module.exports = {
-   Node,
-   LinkedList,
-   HashTable,
+  Node,
+  LinkedList,
+  HashTable,
 };
